@@ -12,6 +12,7 @@ Public Function FormatTextForQueries( _
 'ASCII character codes. Entire string is then surrounded by the appopriate delimiters.
 '	Eg: 	FormatTextForQueries("*this is a 'test'")
 '	Result:	Chr(42) & 'this is a ' & Chr(39) & 'test' & Chr(39)
+'
 'PARAMETERS
 '	<Parameter1>	Parameter1 description
 '	<Parameter2>	Parameter2 description
