@@ -1,0 +1,42 @@
+Public Sub DisplayAllErrors()
+'''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+'DATE       AUTHOR
+'7/19/18    Alejandro
+'
+'PURPOSE
+'Displays all currently raised errors to the user. Intended only to be called in the error handling
+'of a function or sub routine.
+'
+'PARAMETERS
+'   None
+'
+'TICKETS
+'Date       Ticket          Description
+'
+'''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+    'Create a string of all error numbers and descriptions and a count of all errors currently raised
+    Dim strErrors As String
+    Dim intErrorCount As Integer
+    'Not sure why this would be 0, but I remember a case where the count was 0, but there was an
+    'error raised and it was only accessible using the Err object
+    If DBEngine.Errors.Count = 0 Then
+        'Create string
+        strErrors = "(" & Err.Number & "): " & Err.Description
+        'Set count
+        intErrorCount = 1
+    Else
+        'Loop through each error
+        Dim dbeError As Error
+        For Each dbeError In DBEngine.Errors
+            'Create string
+            strErrors = strErrors & "(" & dbeError.Number & "): " & dbeError.Description & vbCrLf
+            'Set count
+            intErrorCount = intErrorCount + 1
+        Next
+        'Remove last line break
+        strErrors = Left(strErrors, Len(strErrors) - Len(vbCrLf))
+    End If
+    
+    'Display errors to user
+    MsgBox "The last operation raised " & intErrorCount & " error(s):" & vbCrLf & vbCrLf & strErrors, vbCritical + vbOKOnly, "Error(s)"
+End Sub
