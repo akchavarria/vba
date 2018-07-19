@@ -1,0 +1,34 @@
+Public Sub ExecuteDatabaseCommand( _
+    db As DAO.Database, _
+    strSQL As String _
+)
+'''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+'DATE       AUTHOR
+'7/19/18    Alejandro
+'
+'PURPOSE
+'Executes a SQL command on a DAO database object making sure it fails if any errors are
+'encountered. Simplifies and standardizes such calls.
+'
+'PARAMETERS
+'   db      DAO database object on which to execute the SQL command
+'   strSQL  SQL command to execute
+'
+'TICKETS
+'Date       Ticket          Description
+'
+'''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+On Error GoTo Error
+
+    db.Execute strSQL, dbSQLPassThrough + dbFailOnError + dbSeeChanges
+
+ExitOnly:
+    Exit Sub
+
+Error:
+    DoCmd.SetWarnings True
+    Application.Echo True
+    DisplayAllErrors
+    Err.Raise Err.Number, Err.Source, Err.Description, Err.HelpFile, Err.HelpContext
+    Resume ExitOnly
+End Sub
