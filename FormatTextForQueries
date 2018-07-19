@@ -1,0 +1,68 @@
+Public Function FormatTextForQueries( _
+    ByVal strText As String, _
+    Optional blnFormatForSQLServer As Boolean _
+) As String
+'''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+'DATE		AUTHOR
+'7/19/18	Alejandro
+'
+'PURPOSE
+'Formats a string so that it can be used in a SQL statement as a string literal. Replaces
+'characters that may need to be espaced or be interpreted incorrectly (depending on context) with
+'ASCII character codes. Entire string is then surrounded by the appopriate delimiters.
+'	Eg: 	FormatTextForQueries("*this is a 'test'")
+'	Result:	Chr(42) & 'this is a ' & Chr(39) & 'test' & Chr(39)
+'PARAMETERS
+'	<Parameter1>	Parameter1 description
+'	<Parameter2>	Parameter2 description
+'	<ParameterN>	ParameterN description
+'
+'TICKETS
+'Date		Ticket			Description
+'
+'''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+    'Replace all instances of "'" with the ASCII character function for the "'" symbol so that the
+    'surrounding "'" that the function returns won't get confused with any "'" in the actual string
+    If blnFormatForSQLServer Then
+        strText = Replace(strText, "'", "' + CHAR(39) + '")
+    Else
+        strText = Replace(strText, "'", "' & Chr(39) & '")
+    End If
+    
+    'Replace all instances of "*" (used for system cost centers) with the ASCII character function
+    'for the "*" symbol so that we don't run into issues with the query where it expects us to have
+    'used the operator Like before a string like '*-CostCenterName'
+    If blnFormatForSQLServer Then
+        strText = Replace(strText, "*", "' + CHAR(42) + '")
+    Else
+        strText = Replace(strText, "*", "' & Chr(42) & '")
+    End If
+    
+    'Surround the result with "'"
+    strText = "'" & strText & "'"
+    
+    'If the "*" was at the beginning or end of the original string, the string will have been
+    'modified to start or end with empty quotes and we can get rid of those
+    Dim strReplace As String
+    '* at beginning
+    If blnFormatForSQLServer Then
+        strReplace = "'' + "
+    Else
+        strReplace = "'' & "
+    End If
+    If Left(strText, Len(strReplace)) = strReplace Then
+        strText = Replace(strText, strReplace, "", 1, 1)
+    End If
+    '* at end
+    If blnFormatForSQLServer Then
+        strReplace = " + ''"
+    Else
+        strReplace = " & ''"
+    End If
+    If Right(strText, Len(strReplace)) = strReplace Then
+        strText = StrReverse(Replace(StrReverse(strText), StrReverse(strReplace), "", 1, 1))
+    End If
+    
+    'Return the result
+    FormatTextForQueries = strText
+End Function
