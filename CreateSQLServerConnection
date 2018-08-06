@@ -1,0 +1,19 @@
+Public Function CreateSQLServerConnection(intSQLServer As nhSQLServer) As ADODB.Connection
+'''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+'DATE       AUTHOR
+'8/6/18    Alejandro
+'
+'PURPOSE
+'Creates an ADO connection to the given SQL Server database
+'
+'PARAMETERS
+'   intSQLServer    Enumeration value of the SQL Server database to which to make a connection
+'
+'TICKETS
+'Date       Ticket          Description
+'8/6/18     NHITAP-36       Review General Ledger Tool
+'''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+    'Create the connection
+    Set CreateSQLServerConnection = New ADODB.Connection
+    CreateSQLServerConnection.Open GetSQLServerConnectionString(intSQLServer)
+End Function
