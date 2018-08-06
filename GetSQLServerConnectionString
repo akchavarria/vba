@@ -1,4 +1,6 @@
-Public Function GetSQLServerConnectionString(intSQLServer As nhSQLServerDBs) As String
+Public Function GetSQLServerConnectionString( _
+    intSQLServer As nhSQLServerDBs _
+) As String
 '''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
 'DATE       AUTHOR
 '8/6/18    Alejandro
