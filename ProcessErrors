@@ -1,0 +1,48 @@
+Public Sub ProcessErrors( _
+  Optional blnRaiseErrorForDebugging As Boolean _
+)
+'''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+'DATE       AUTHOR
+'8/6/18    Alejandro
+'
+'PURPOSE
+'Displays information about all currently raised errors to the user
+'
+'PARAMETERS
+'   blnRaiseErrorForDebugging    True if an error should be raised for debugging purposes
+'
+'TICKETS
+'Date       Ticket          Description
+'8/6/18     NHITAP-36       Review General Ledger Tool
+'''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+    'Set everything back to normal
+    DoCmd.SetWarnings True
+    Application.Echo True
+    EndLongProcess
+    
+    'Get information about the error(s)
+    Dim strErrors As String
+    If DBEngine.Errors.Count = 0 Then
+        strErrors = "(" & Err.Number & "): " & Err.Description
+    Else
+        Dim dbeError As Error
+        For Each dbeError In DBEngine.Errors
+            strErrors = strErrors & "(" & dbeError.Number & "): " & dbeError.Description & vbCrLf
+        Next
+        If strErrors <> "" Then strErrors = Left(strErrors, Len(strErrors) - Len(vbCrLf))
+    End If
+    If strErrors = "" Then
+        MsgBox "ProcessErrors was called, but no errors were detected.", vbCritical + vbOKOnly, "Unknown Error"
+        Exit Sub
+    End If
+    Dim strErrorSource As String
+    strErrorSource = errSource
+    
+    'Display information about the errors
+    MsgBox "Error(s) were encountered during execution:" & vbCrLf & vbCrLf & strErrors
+    
+    'Raise an error for debugging purposes if indicated
+    If blnRaiseErrorForDebugging Then
+        Err.Raise Err.Number, Err.Source, Err.Description, Err.HelpFile, Err.HelpContext
+    End If
+End Sub
