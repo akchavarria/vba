@@ -1,0 +1,17 @@
+Public Function GetDatabaseFullName() As String
+'''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+'DATE       AUTHOR
+'8/6/18    Alejandro
+'
+'PURPOSE
+'Returns the full path and file name of the current database
+'
+'PARAMETERS
+'   None
+'
+'TICKETS
+'Date       Ticket          Description
+'8/6/18     NHITAP-36       Review General Ledger Tool
+'''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+    GetDatabaseFullName = CurrentDb.Name
+End Function
