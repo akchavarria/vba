@@ -1,0 +1,4 @@
+Public Enum nhSQLServerDBs
+    nhSQLServerDBMIP
+    nhSQLServerDBTAD
+End Enum
