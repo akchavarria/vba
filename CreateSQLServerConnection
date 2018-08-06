@@ -1,5 +1,5 @@
 Public Function CreateSQLServerConnection( _
-    intSQLServer As nhSQLServer _
+    intSQLServer As nhSQLServerDBs _
 ) As ADODB.Connection
 '''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
 'DATE       AUTHOR
