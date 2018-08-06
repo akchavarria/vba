@@ -1,0 +1,20 @@
+Public Sub RaiseCustomError( _
+  strErrorDescription As String _
+)
+'''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+'DATE       AUTHOR
+'8/6/18    Alejandro
+'
+'PURPOSE
+'Raises an error using the first available user-defined error number
+'
+'PARAMETERS
+'   strErrorDescription    Description of the error
+'
+'TICKETS
+'Date       Ticket          Description
+'8/6/18     NHITAP-36       Review General Ledger Tool
+'''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+    'Raise the error
+    Err.Raise vbObjectError + 513, , strErrorDescription
+End Sub
