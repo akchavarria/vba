@@ -1,4 +1,6 @@
-Public Function CreateSQLServerConnection(intSQLServer As nhSQLServer) As ADODB.Connection
+Public Function CreateSQLServerConnection( _
+    intSQLServer As nhSQLServer _
+) As ADODB.Connection
 '''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
 'DATE       AUTHOR
 '8/6/18    Alejandro
