@@ -1,0 +1,31 @@
+Public Sub StartLongProcess()
+'''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+'DATE       AUTHOR
+'8/6/18    Alejandro
+'
+'PURPOSE
+'Displays the "Processing" form and turns off screen repaints
+'
+'PARAMETERS
+'   intSQLServer    Enumeration value of the SQL Server database to which to make a connection
+'
+'TICKETS
+'Date       Ticket          Description
+'8/6/18     NHITAP-36       Review General Ledger Tool
+'''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+    'Define the name of the "Processing" form
+    Dim strFormName As String
+    strFormName = "frm_Processing"
+    
+    'Open the processing form
+    DoCmd.OpenForm strFormName, acNormal, , , acFormPropertySettings, acWindowNormal
+    
+    'Display the hourglass
+    DoCmd.Hourglass True
+    
+    'Repaint the processing form to make sure it is displayed
+    DoCmd.RepaintObject acForm, strFormName
+    
+    'Turn off screen repaints
+    Application.Echo False
+End Sub
