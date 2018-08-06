@@ -1,5 +1,5 @@
 Public Enum nhSQLServerDBs
     nhSQLServerDBMIP
     nhSQLServerDBTAD
-    nhSQLServerNHProxyDB
+    nhSQLServerDBNHProxyDB
 End Enum
