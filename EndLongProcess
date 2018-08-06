@@ -1,0 +1,34 @@
+Public Function EndLongProcess( _
+    Optional intObjectToDisplayType As AcObjectType, _
+    Optional strObjectToDisplayName As String _
+)
+'''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+'DATE       AUTHOR
+'8/6/18    Alejandro
+'
+'PURPOSE
+'Stops displaying the "Processing" form and returns program operation to normal
+'
+'PARAMETERS
+'   intSQLServer    Enumeration value of the SQL Server database to which to make a connection
+'
+'TICKETS
+'Date       Ticket          Description
+'8/6/18     NHITAP-36       Review General Ledger Tool
+'''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+    'Define name of form to display "Processing"
+    Dim strFormName As String
+    strFormName = "frm_Processing"
+    
+    'Close the processing form if it's open
+    If CurrentProject.AllForms(strFormName).IsLoaded Then DoCmd.Close acForm, strFormName, acSaveNo
+    
+    'Display the object passed to the function if one was
+    If strObjectToDisplayName <> "" Then DoCmd.SelectObject intObjectToDisplayType, strObjectToDisplayName
+    
+    'Turn off screen repaints
+    Application.Echo True
+    
+    'Don't show the hourglass anymore
+    DoCmd.Hourglass False
+End Function
