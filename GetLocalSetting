@@ -1,0 +1,49 @@
+Public Function GetLocalSetting( _
+    strSettingName As String _
+) As Variant
+'''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+'DATE       AUTHOR
+'8/6/18    Alejandro
+'
+'PURPOSE
+'Returns a value from the local settings table
+'
+'PARAMETERS
+'   strSettingName    Name of the local setting for which to return the value
+'
+'TICKETS
+'Date       Ticket          Description
+'8/6/18     NHITAP-36       Review General Ledger Tool
+'''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+    'Set basic variables
+    Dim db As DAO.Database
+    Set db = CurrentDb
+    
+    'Create the SQL to retrieve the setting
+    Dim strSQL As String
+    strSQL = _
+        "SELECT " & _
+            "SettingDataType, " & _
+            "SettingValue " & _
+        "FROM LocalSettings " & _
+        "WHERE SettingName = " & FormatTextForQueries(strSettingName)
+    
+    'Retrieve the setting
+    Dim intSettingDataType As Integer
+    Dim strSettingValue As String
+    Dim rst As DAO.Recordset
+    Set rst = CreateDatabaseRecordset(db, strSQL)
+    If rst.EOF Then RaiseCustomError ("Local setting not found.")
+    intSettingDataType = rst.Fields("SettingDataType")
+    strSettingValue = rst.Fields("SettingValue")
+    
+    'Return the setting using the correct data type
+    Select Case intSettingDataType
+        Case DataTypeEnum.dbText
+            GetLocalSetting = strSettingValue
+        Case DataTypeEnum.dbBigInt
+            GetLocalSetting = CLng(strSettingValue)
+        Case Else
+            RaiseCustomError ("Local setting data type not supported.")
+    End Select
+End Function
