@@ -1,0 +1,29 @@
+Public Function CreateDatabaseRecordset( _
+    db As DAO.Database, _
+    strSQL As String _
+) As DAO.Recordset
+'''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+'DATE       AUTHOR
+'8/6/18    Alejandro
+'
+'PURPOSE
+'Creates a DAO recordset for the given SQL statement and database object
+'
+'PARAMETERS
+'   cn      Connection object that points to the database where the data will be retrieved from
+'   strSQL  SQL that will create the recordset
+'
+'TICKETS
+'Date       Ticket          Description
+'8/6/18     NHITAP-36       Review General Ledger Tool
+'''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+    'Create recordset
+    Set CreateDatabaseRecordset = db.OpenRecordset(strSQL, dbOpenSnapshot, dbSQLPassThrough + dbFailOnError)
+
+ExitOnly:
+    Exit Function
+
+Error:
+    ProcessErrors
+    Resume ExitOnly
+End Function
