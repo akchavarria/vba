@@ -1,0 +1,29 @@
+Public Function ExecuteConnectionCommand( _
+    cn As ADODB.Connection, _
+    strSQL As String _
+) As Long
+'''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+'DATE       AUTHOR
+'8/6/18    Alejandro
+'
+'PURPOSE
+'Executes a SQL command on the given connection object
+'
+'PARAMETERS
+'   cn      Connection object that points to the database where the command will be executed
+'   strSQL  SQL text for the command to execute
+'
+'TICKETS
+'Date       Ticket          Description
+'8/6/18     NHITAP-36       Review General Ledger Tool
+'''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+    'Execute the command
+    cn.Execute strSQL, ExecuteConnectionCommand, adExecuteNoRecords
+
+ExitOnly:
+    Exit Function
+
+Error:
+    ProcessErrors
+    Resume ExitOnly
+End Function
