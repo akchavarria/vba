@@ -28,8 +28,7 @@ Public Function ExistRecordsInSQLServerSelectStatement( _
                         "1 " & _
                     "ELSE " & _
                         "0 " & _
-                "END "
-    strSQL = strSQL & _
+                "END " & _
             "AS bit);"
     ExistRecordsInSQLServerSelectStatement = CreateConnectionRecordset(cn, strSQL)(0)
 End Function
