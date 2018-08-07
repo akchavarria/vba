@@ -22,21 +22,25 @@ Public Sub ProcessErrors( _
     
     'Get information about the error(s)
     Dim strErrors As String
-    If DBEngine.Errors.Count = 0 Then
+    'No errors
+    If DBEngine.Errors.Count = 0 And Err.Number = 0 Then
+        MsgBox "ProcessErrors was called, but no errors were detected.", vbCritical + vbOKOnly, "Unknown Error"
+        Exit Sub
+    'No errors in the errors collection, only in the error object
+    ElseIf DBEngine.Errors.Count = 0 Then
         strErrors = "(" & Err.Number & "): " & Err.Description
+    'Errors in both the errors collection and the error object
     Else
+        'Create message from the error object
+        strErrors = "(" & Err.Number & "): " & Err.Description & vbCrLf
+        'Create message from the errors collection
         Dim dbeError As Error
         For Each dbeError In DBEngine.Errors
             strErrors = strErrors & "(" & dbeError.Number & "): " & dbeError.Description & vbCrLf
         Next
-        If strErrors <> "" Then strErrors = Left(strErrors, Len(strErrors) - Len(vbCrLf))
+        'Remove last line break
+        strErrors = Left(strErrors, Len(strErrors) - Len(vbCrLf))
     End If
-    If strErrors = "" Then
-        MsgBox "ProcessErrors was called, but no errors were detected.", vbCritical + vbOKOnly, "Unknown Error"
-        Exit Sub
-    End If
-    Dim strErrorSource As String
-    strErrorSource = errSource
     
     'Display information about the errors
     MsgBox "Error(s) were encountered during execution:" & vbCrLf & vbCrLf & strErrors
