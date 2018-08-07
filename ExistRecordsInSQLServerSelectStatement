@@ -1,0 +1,35 @@
+Public Function ExistRecordsInSQLServerSelectStatement( _
+    cn As ADODB.Connection, _
+    strSQLSelectStatement As String _
+) As Boolean
+'''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+'DATE       AUTHOR
+'8/7/18    Alejandro
+'
+'PURPOSE
+'Tests to see if SQL statement returns any records and returns true if so, false if not
+'
+'PARAMETERS
+'   cn                      Connection object that points to the database where the data will be
+'                           retrieved from
+'   strSQLSelectStatement   SQL select statement to test
+'
+'TICKETS
+'Date       Ticket          Description
+'8/7/18     NHITAP-36       Review General Ledger Tool
+'''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+    'Return true if the SELECT statement returns any records, false if not
+    Dim strSQL As String
+    strSQL = _
+        "SELECT " & _
+            "CAST( " & _
+                "CASE " & _
+                    "WHEN EXISTS(" & strSQLSelectStatement & ") THEN " & _
+                        "1 " & _
+                    "ELSE " & _
+                        "0 " & _
+                "END "
+    strSQL = strSQL & _
+            "AS bit);"
+    ExistRecordsInSQLServerSelectStatement = CreateConnectionRecordset(cn, strSQL)(0)
+End Function
