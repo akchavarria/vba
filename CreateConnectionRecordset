@@ -17,6 +17,8 @@ Public Function CreateConnectionRecordset( _
 'Date       Ticket          Description
 '8/6/18     NHITAP-36       Review General Ledger Tool
 '''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+On Error GoTo Error
+
     'Create recordset
     Set CreateConnectionRecordset = New ADODB.Recordset
     CreateConnectionRecordset.Open strSQL, cn
@@ -26,5 +28,6 @@ ExitOnly:
 
 Error:
     ProcessErrors
+    Err.Raise Err.Number, Err.Source, Err.Description, Err.HelpFile, Err.HelpContext
     Resume ExitOnly
 End Function
