@@ -1,0 +1,28 @@
+Public Function ExistsForm(strFormName As String) As Boolean
+'''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+'DATE       AUTHOR
+'9/18/18    Alejandro
+'
+'PURPOSE
+'Returns true if a form exists with the name passed to the function, false if not.
+'
+'PARAMETERS
+'   strFormName     Name of the form we want to test the existence of
+'
+'TICKETS
+'Date       Ticket          Description
+'9/18/18    NHITAP-41       Make changes requested by Steve to ECS Budget Mgmt Tool
+'''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+    On Error GoTo Error
+    
+    'Try to access the name property of the form name passed to this function
+    Dim strName As String
+    strName = CurrentProject.AllForms(strFormName).Name
+    
+    'If we have made it this far, the form exists
+    ExistsForm = True
+    
+Error:
+    'If we jumped to the error label, the return value is still false, otherwise it was changed to true
+    Exit Function
+End Function
