@@ -1,7 +1,7 @@
-Public Sub ExecuteDatabaseCommand( _
+Public Function ExecuteDatabaseCommand( _
     db As DAO.Database, _
     strSQL As String _
-)
+) As Long
 '''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
 'DATE       AUTHOR
 '7/19/18    Alejandro
@@ -16,17 +16,22 @@ Public Sub ExecuteDatabaseCommand( _
 '
 'TICKETS
 'Date       Ticket          Description
-'
+'10/15/18   NHITAP-41       Create credit card purchase expensing tool (converted to function so it
+'                           could return RecordsAffected)
 '''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
 On Error GoTo Error
 
+    'Execute command
     db.Execute strSQL, dbSQLPassThrough + dbFailOnError + dbSeeChanges
+    
+    'Return RecordsAffected
+    ExecuteDatabaseCommand = db.RecordsAffected
 
 ExitOnly:
-    Exit Sub
+    Exit Function
 
 Error:
     ProcessErrors
     Err.Raise Err.Number, Err.Source, Err.Description, Err.HelpFile, Err.HelpContext
     Resume ExitOnly
-End Sub
+End Function
