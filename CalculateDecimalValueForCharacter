@@ -1,0 +1,23 @@
+Public Function CalculateDecimalValueForCharacter(str As String) As Long
+'''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+'DATE       AUTHOR
+'10/18/18    Alejandro
+'
+'PURPOSE
+'Returns a decimal value for the first character in the string passed to the function. Is
+'considered an enhancement of the built-in AscW function because the built-in function can
+'sometimes return negative values incorrectly - this corrects for that.
+'
+'PARAMETERS
+'   str     String whose first character will be returned as a decimal value
+'
+'TICKETS
+'Date       Ticket          Description
+'10/18/18   NHDBTAD-320     T-Type cost center name changed when importing into PT
+'''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+    'Get the character code
+    CalculateDecimalValueForCharacter = AscW(str)
+    
+    'If the character code is negative, it is due to wrap-around. Simply add 65536
+    If CalculateDecimalValueForCharacter < 0 Then CalculateDecimalValueForCharacter = 65536 + CalculateDecimalValueForCharacter
+End Function
