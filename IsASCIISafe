@@ -1,0 +1,35 @@
+Public Function IsASCIISafe(str As String) As Boolean
+'''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+'DATE       AUTHOR
+'10/18/18    Alejandro
+'
+'PURPOSE
+'Returns a boolean value that indicates whether the string passed to the function contains any
+'"unsafe" characters. "Unsafe" characters are defined as those outside the range of the decimal
+'values 0 and 127. Characters outside of these bounds may result in unexpected behavior for certain
+'applications.
+'
+'PARAMETERS
+'   str     String to test for unsafe characters
+'
+'TICKETS
+'Date       Ticket          Description
+'10/18/18   NHDBTAD-320     T-Type cost center name changed when importing into PT
+'''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+    'Assume string is safe and only return false if an invalid character is found
+    IsASCIISafe = True
+
+    'Loop through all characters in the string passed to the function and determine if it is "safe"
+    'Consider "safe" those characters that are between 0 and 127
+    Dim intPosition As Integer
+    Dim lngCharacterCode As Long
+    For intPosition = 1 To Len(str)
+        'Get the character code in decimal
+        lngCharacterCode = CalculateDecimalValueForCharacter(Mid(str, intPosition, 1))
+        'If not between 0 and 127 it is not safe
+        If lngCharacterCode < 0 Or lngCharacterCode > 127 Then
+            IsASCIISafe = False
+            Exit For
+        End If
+    Next intPosition
+End Function
