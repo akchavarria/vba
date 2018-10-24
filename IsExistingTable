@@ -1,0 +1,27 @@
+Public Function IsExistingTable( _
+    strTableName As String _
+) As Boolean
+'''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+'DATE       AUTHOR
+'10/24/18   Alejandro
+'
+'PURPOSE
+'Returns true if the given table name is the name of an existing table, otherwise false.
+'
+'PARAMETERS
+'   strTableName    Name of the table for which to test existence
+'
+'TICKETS
+'Date       Ticket          Description
+'10/24/18   NHITAP-41       Create credit card purchase expensing tool
+'''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+On Error GoTo Error
+
+    'Attempt to access the name property of the table def. If the table exists, set the return
+    'value to true. If it doesn't, an error will be thrown and the default return value (false)
+    'will be returned
+    IsExistingTable = IIf(CurrentDb.TableDefs(strTableName).Name <> "", True, False)
+
+Error:
+    Exit Function
+End Function
