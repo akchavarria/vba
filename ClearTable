@@ -1,0 +1,35 @@
+Public Sub ClearTable( _
+    strTableName As String, _
+    Optional blnRaiseErrorIfTableNonExistent As Boolean _
+)
+'''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+'DATE       AUTHOR
+'10/24/18   Alejandro
+'
+'PURPOSE
+'Deletes all records in the given table if it exists. Optionally raises an error if the table does
+'not exist.
+'
+'PARAMETERS
+'   strTableName                        Table in which to delete all records
+'   blnRaiseErrorIfTableNonExistent     False (default) if the sub should do nothing if the table
+'                                       does not exist; True to raise an error.
+'
+'TICKETS
+'Date       Ticket          Description
+'10/24/18   NHITAP-41       Create credit card purchase expensing tool
+'''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+    'Only attempt to delete records if the table exists
+    If IsExistingTable(strTableName) Then
+        'Create database object
+        Dim db As DAO.Database
+        Set db = CurrentDb
+        'Delete all records
+        Dim strSQL As String
+        strSQL = "DELETE FROM " & strTableName
+        ExecuteDatabaseCommand db, strSQL
+    'If the table does not exist and the use wants to raise an error in that case, raise an error
+    ElseIf blnRaiseErrorIfTableNonExistent Then
+        RaiseCustomError ("Function 'ClearTable' raised the following error: Table '" & strTableName & "' does not exist.'")
+    End If
+End Sub
