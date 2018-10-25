@@ -1,0 +1,28 @@
+Public Function CalculateFileDialogFilterDescription( _
+    intFileType As nhFileTypes _
+) As String
+'''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+'DATE       AUTHOR
+'10/25/18   Alejandro
+'
+'PURPOSE
+'Accepts a user-defined enumeration for file types and returns a string description that should be
+'used in a file dialog filter. Any file types for which the description has not yet been defined
+'raise an error.
+'
+'PARAMETERS
+'   intFileType     File type to translate into a spreadsheet type enumeration value
+'
+'TICKETS
+'Date       Ticket          Description
+'10/25/18   NHITAP-41       Create credit card purchase expensing tool
+'''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+    'Specify descriptions for all file types
+    Select Case intFileType
+        Case nhFileTypes.nhFileTypeExcel972003
+            CalculateFileDialogFilterDescription = "Excel 97-2003 Workbook"
+        'If file type hasn't yet had a description defined, return an error
+        Case Else
+            RaiseCustomError "Invalid value '" & intFileType & "' for parameter intFileType sent to function CalculateFileDialogFilterDescription."
+    End Select
+End Function
