@@ -1,0 +1,25 @@
+Public Function GetUserSettingLastImportDirectoryCreditCardTransactions( _
+    cn As ADODB.Connection _
+) As String
+'''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+'DATE       AUTHOR
+'10/25/18   Alejandro
+'
+'PURPOSE
+'Returns the value of the user setting the stores the directory the user last used to select a file
+'from when importing credit card transactions.
+'
+'PARAMETERS
+'   cn              Connection to use
+'
+'TICKETS
+'Date       Ticket          Description
+'10/25/18   NHITAP-41       Create credit card purchase expensing tool
+'''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+    'Get the setting value
+    Dim varValue As Variant
+    varValue = GetUserSetting(cn, "LastImportDirectoryCreditCardTransactions")
+    
+    'If the setting exists, return it, otherwise return an empty string
+    If Not IsNull(varValue) Then GetUserSettingLastImportDirectoryCreditCardTransactions = varValue
+End Function
