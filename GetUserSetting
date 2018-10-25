@@ -19,7 +19,7 @@ Public Function GetUserSetting( _
 '''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
     'Select and cast the setting
     Dim strSQL As String
-    strSQL = "EXECUTE dbo.spSelectAndCastUserSetting " & FormatTextForQueries(strSettingName)
+    strSQL = "EXECUTE dbo.spSelectAndCastUserSetting " & FormatTextForQueries(strSettingName, True)
     Dim rst As ADODB.Recordset
     Set rst = CreateConnectionRecordset(cn, strSQL)
     
