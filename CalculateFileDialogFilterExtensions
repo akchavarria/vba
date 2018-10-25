@@ -1,0 +1,29 @@
+Public Function CalculateFileDialogFilterExtensions( _
+    intFileType As nhFileTypes _
+) As String
+'''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+'DATE       AUTHOR
+'10/25/18   Alejandro
+'
+'PURPOSE
+'Accepts a user-defined enumeration for file types and returns a string extension definition that
+'should be used in a file dialog filter. Any file types for which the extension definition has not
+'yet been defined raise an error.
+'
+'PARAMETERS
+'   intFileType     File type to return an extension definition for
+'
+'TICKETS
+'Date       Ticket          Description
+'10/25/18   NHITAP-41       Create credit card purchase expensing tool
+'''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+    'Specify extension definitions for all file types
+    Select Case intFileType
+        'Excel 97-2003 Workbook
+        Case nhFileTypes.nhFileTypeExcel972003
+            CalculateFileDialogFilterExtensions = "*.xls"
+        'If file type hasn't yet had a description defined, return an error
+        Case Else
+            RaiseCustomError "Invalid value '" & intFileType & "' for parameter intFileType sent to function CalculateFileDialogFilterExtensions."
+    End Select
+End Function
