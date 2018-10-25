@@ -1,0 +1,51 @@
+Public Function PromptForFullFilePath( _
+    Optional strTitle As String, _
+    Optional strInitialDirectory As String, _
+    Optional intFileType As nhFileTypes _
+) As String
+'''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+'DATE       AUTHOR
+'10/25/18   Alejandro
+'
+'PURPOSE
+'Opens a file dialog to allow the user to select a file (optionally limited to a specific file type
+'or set of file types). Optionally opens to a specific directory. Returns the full file path and
+'name of the file selected.
+'
+'PARAMETERS
+'   strTitle                Optional. Title of the file dialog. If none specified, defaults to
+'                           "File Open"
+'   strInitialDirectory     Optional. Full path to the directory to open the file dialog in. If
+'                           none specified, defaults to the directory this database is stored in.
+'   intFileType             Optional. File type or set of file types to limit the selection to. If
+'                           none specified, defaults to all files.
+'
+'TICKETS
+'Date       Ticket          Description
+'10/25/18   NHITAP-41       Create credit card purchase expensing tool
+'''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+    'Create file dialog object
+    Dim fdg As Office.FileDialog
+    Set fdg = Application.FileDialog(msoFileDialogFilePicker)
+    
+    'Set file dialog properties
+    With fdg
+        'Single file selection only
+        .AllowMultiSelect = False
+        'Title of file dialog (default to "File Open" if none specified)
+        .Title = strTitle
+        'Initial directory to browse (default to the path the current database is in if none specified)
+        .InitialFileName = strInitialDirectory
+        'Clear all filters and add our own (if specified)
+        If intFileType <> 0 Then
+            .Filters.Clear
+            .Filters.Add _
+                Description:=CalculateFileDialogFilterDescription(intFileType), _
+                Extensions:=CalculateFileDialogFilterExtensions(intFileType)
+        End If
+    End With
+    
+    'Show the dialog. If the method returns True, the user picked a file - return the full path to that file. If the method returns False, the user
+    'clicked Cancel.
+    If fdg.Show Then PromptForFullFilePath = fdg.SelectedItems(1)
+End Function
