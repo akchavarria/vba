@@ -1,0 +1,49 @@
+Public Sub ImportCreditCardTransactions( _
+    cn As ADODB.Connection _
+)
+'''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+'DATE       AUTHOR
+'10/25/18   Alejandro
+'
+'PURPOSE
+'Imports credit card transactions. Prompts user to select the import file, imports the file into a
+'local table, then deletes any invalid rows (such as the totals row)
+'
+'PARAMETERS
+'   cn      Connection to use
+'
+'TICKETS
+'Date       Ticket          Description
+'10/25/18   NHITAP-41       Create credit card purchase expensing tool
+'''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+    'Specify the format of the import file. (Format of file downloaded from Wells Fargo on 10/24/18 was determined to be of type "Microsoft Excel
+    '97-2003 Worksheet" by Windows Explorer. This enum value corresponds to the "Microsoft Excel 2000 format".)
+    Dim intFileType As nhFileTypes
+    intFileType = nhFileTypeExcel972003
+
+    'Get the full path to the credit card transactions file downloaded from our bank to import
+    Dim strFileName  As String
+    strFileName = _
+        PromptForFullFilePath( _
+            "Select Credit Card Transactions Import File", _
+            GetUserSettingLastImportDirectoryCreditCardTransactions(cn), _
+            intFileType _
+        )
+    If strFileName = "" Then
+        Exit Sub
+    Else
+        SaveUserSettingLastImportDirectoryCreditCardTransactions _
+            cn, _
+            CalculateContainingDirectoryPathForFullFilePath(strFileName)
+    End If
+    
+    'Specify the name of the table to import into
+    Dim strImportTableName  As String
+    strImportTableName = GetGlobalSetting(cn, "ImportFileCreditCardTransactionsACCDBTableName")
+    
+    'Import the file
+    If Not ImportExcelFile(strFileName, strImportTableName, intFileType) Then Exit Sub
+    
+    'Delete any rows is the import table that are invalid
+    DeleteInvalidImportedRowsCreditCardTransactions cn, strImportTableName
+End Sub
