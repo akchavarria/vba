@@ -1,0 +1,91 @@
+Public Function ImportExcelFile( _
+    strFileName As String, _
+    strImportTableName As String, _
+    intFileType As nhFileTypes, _
+    Optional strSheetName As String _
+) As Boolean
+'''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+'DATE       AUTHOR
+'10/25/18   Alejandro
+'
+'PURPOSE
+'Imports the contents of a worksheet of an Excel file (if no worksheet specified, imports the first
+'one) into an existing or new local table.
+'
+'PARAMETERS
+'   strFileName         Full file path and name of the Excel file to import
+'   strImportTableName  Name of the table to import into (if it doesn't already exist, it will be
+'                       created using the headers in the import file)
+'   intFileType         Type of Excel file to import
+'   strSheetName        Optional. Name of the worksheet in the Excel file to import. If none
+'                       specified, the first one will be imported.
+'
+'TICKETS
+'Date       Ticket          Description
+'10/25/18   NHITAP-41       Create credit card purchase expensing tool
+'''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+On Error GoTo Error
+    
+    'Clear the table the user specified if it exists (if it doesn't, won't do anything)
+    ClearTable strImportTableName
+    
+    'Import the spreadsheet into the table the user specified. If the table doesn't exist, it will create it based on the data in the spreadsheet to
+    'be imported.
+    '   Parameters used:
+    '       Range   If the user passed in a sheet name, append an exclamation to it, otherwise, pass an empty string
+    DoCmd.TransferSpreadsheet _
+        TransferType:=acImport, _
+        SpreadsheetType:=CalculateTransferSpreadsheetSpreadsheetType(intFileType), _
+        TableName:=strImportTableName, _
+        FileName:=strFileName, _
+        HasFieldNames:=True, _
+        Range:=IIf(strSheetName <> "", strSheetName & "!", "")
+        
+    'Return true (import was successful)
+    ImportExcelFile = True
+
+ExitOnly:
+    Exit Function
+
+Error:
+    Select Case Err.Number
+        'Incorrect headers
+        Case 2391
+            MsgBox _
+                "The import file you selected, does not have the correct headers. The " & _
+                    "following error was returned:" & _
+                    vbCrLf & vbCrLf & _
+                    Err.Description & _
+                    vbCrLf & vbCrLf & _
+                    "Please check the file for correctness. If no cause can be determined, " & _
+                    "please contact the Database Developer to troubleshoot.", _
+                vbCritical + vbOKOnly, _
+                "Incorrect Headers in Import File"
+        'File does not exist OR
+        'Invalid sheet name value (may have tried to specify a range or included an invalid character such as '!' or '$'
+        Case 3011
+            MsgBox _
+                "An error has occured when attempting to import the file you selected. One of the following may have happened:" & _
+                    vbCrLf & vbCrLf & _
+                    "-File does not exist or you do not have permission to access it" & vbCrLf & _
+                    "-You specified a worksheet name using invalid characters such as '!' or '$'" & vbCrLf & _
+                    "-You specified a worksheet name in conjunction with a range (ranges are not currently supported)", _
+                vbCritical + vbOKOnly, _
+                "Error Importing File"
+        'Sheet name does not exist
+        Case 3125
+            MsgBox _
+                "The worksheet name you specified does not exist in the file you selected.", _
+                vbCritical + vbOKOnly, _
+                "Worksheet Does Not Exist"
+        'Unhandled error, just return the number and description and exit to return false (unsuccessful)
+        Case Else
+            MsgBox _
+                "An error occurred while attempting to import your Excel file:" & _
+                    vbCrLf & vbCrLf & _
+                    Err.Number & ": " & Err.Description, _
+                vbCritical + vbOKOnly, _
+                "Error"
+    End Select
+    Resume ExitOnly
+End Function
