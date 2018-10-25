@@ -11,7 +11,7 @@ Public Function CalculateFileDialogFilterDescription( _
 'raise an error.
 '
 'PARAMETERS
-'   intFileType     File type to translate into a spreadsheet type enumeration value
+'   intFileType     File type to return a description for
 '
 'TICKETS
 'Date       Ticket          Description
@@ -19,6 +19,7 @@ Public Function CalculateFileDialogFilterDescription( _
 '''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
     'Specify descriptions for all file types
     Select Case intFileType
+        'Excel 97-2003 Workbook
         Case nhFileTypes.nhFileTypeExcel972003
             CalculateFileDialogFilterDescription = "Excel 97-2003 Workbook"
         'If file type hasn't yet had a description defined, return an error
