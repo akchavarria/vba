@@ -23,11 +23,17 @@ Public Function GetUserSetting( _
     Dim rst As ADODB.Recordset
     Set rst = CreateConnectionRecordset(cn, strSQL)
     
+    'Return the setting
+    If rst.State = ObjectStateEnum.adStateOpen Then
+        'If nothing was selected, return Null
+        If rst.EOF Then
+            GetUserSetting = Null
+        'Otherwise, return the setting
+        Else
+            GetUserSetting = rst(0)
+        End If
     'If nothing was selected, return Null
-    If rst.EOF Then
-        GetUserSetting = Null
-    'Otherwise, return the setting
     Else
-        GetUserSetting = rst(0)
+        GetUserSetting = Null
     End If
 End Function
