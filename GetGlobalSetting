@@ -1,0 +1,39 @@
+Public Function GetGlobalSetting( _
+    cn As ADODB.Connection, _
+    strSettingName As String _
+) As Variant
+'''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+'DATE       AUTHOR
+'10/25/18   Alejandro
+'
+'PURPOSE
+'Returns the value of a global setting by name.
+'
+'PARAMETERS
+'   cn              Connection to use
+'   strSettingName  Name of the setting to return
+'
+'TICKETS
+'Date       Ticket          Description
+'10/25/18   NHITAP-41       Create credit card purchase expensing tool
+'''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+    'Select and cast the setting
+    Dim strSQL As String
+    strSQL = "EXECUTE dbo.spSelectAndCastGlobalSetting " & FormatTextForQueries(strSettingName, True)
+    Dim rst As ADODB.Recordset
+    Set rst = CreateConnectionRecordset(cn, strSQL)
+    
+    'Return the setting
+    If rst.State = ObjectStateEnum.adStateOpen Then
+        'If nothing was selected, return Null
+        If rst.EOF Then
+            GetGlobalSetting = Null
+        'Otherwise, return the setting
+        Else
+            GetGlobalSetting = rst(0)
+        End If
+    'If nothing was selected, return Null
+    Else
+        GetGlobalSetting = Null
+    End If
+End Function
