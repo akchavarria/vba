@@ -1,0 +1,21 @@
+Public Function CalculateContainingDirectoryPathForFullFilePath( _
+    strFilePath As String _
+) As String
+'''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+'DATE       AUTHOR
+'10/25/18   Alejandro
+'
+'PURPOSE
+'Accepts a string full path and file name and returns the full path to the directory containing the
+'file.
+'
+'PARAMETERS
+'   strFilePath     Full path and file name to return the containing directory for
+'
+'TICKETS
+'Date       Ticket          Description
+'10/25/18   NHITAP-41       Create credit card purchase expensing tool
+'''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+    'Return everything up to the last "\" in the full file path
+    CalculateContainingDirectoryPathForFullFilePath = Left(strFilePath, InStrRev(strFilePath, "\"))
+End Function
