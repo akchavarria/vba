@@ -1,0 +1,29 @@
+Public Function CalculateTransferSpreadsheetSpreadsheetType( _
+    intFileType As nhFileTypes _
+) As AcSpreadSheetType
+'''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+'DATE       AUTHOR
+'10/25/18   Alejandro
+'
+'PURPOSE
+'Accepts a user-defined enumeration for file types and returns a valid value for the build-in
+'enumeration of spreadsheet types. Intended to be used with the ImportExcelFile function. Any
+'invalid file types raise an error.
+'
+'PARAMETERS
+'   intFileType     File type to translate into a spreadsheet type enumeration value
+'
+'TICKETS
+'Date       Ticket          Description
+'10/25/18   NHITAP-41       Create credit card purchase expensing tool
+'''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+    'Only return values for valid file types
+    Select Case intFileType
+        'Excel 97-2003 Workbook
+        Case nhFileTypes.nhFileTypeExcel972003
+            CalculateTransferSpreadsheetSpreadsheetType = AcSpreadSheetType.acSpreadsheetTypeExcel9
+        'Invalid file type (raise error)
+        Case Else
+            RaiseCustomError "Invalid value '" & intFileType & "' for parameter intFileType sent to function CalculateTransferSpreadsheetSpreadsheetType."
+    End Select
+End Function
