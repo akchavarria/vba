@@ -1,0 +1,33 @@
+Public Function GetUserSetting( _
+    cn As ADODB.Connection, _
+    strSettingName As String _
+) As Variant
+'''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+'DATE       AUTHOR
+'10/25/18   Alejandro
+'
+'PURPOSE
+'Returns the value of a user setting by name.
+'
+'PARAMETERS
+'   cn              Connection to use
+'   strSettingName  Name of the setting for which to return the value
+'
+'TICKETS
+'Date       Ticket          Description
+'10/25/18   NHITAP-41       Create credit card purchase expensing tool
+'''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+    'Select and cast the setting
+    Dim strSQL As String
+    strSQL = "EXECUTE dbo.spSelectAndCastUserSetting " & FormatTextForQueries(strSettingName)
+    Dim rst As ADODB.Recordset
+    Set rst = CreateConnectionRecordset(cn, strSQL)
+    
+    'If nothing was selected, return Null
+    If rst.EOF Then
+        GetUserSetting = Null
+    'Otherwise, return the setting
+    Else
+        GetUserSetting = rst(0)
+    End If
+End Function
