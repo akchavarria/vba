@@ -1,0 +1,29 @@
+Public Sub SaveUserSettingLastImportDirectoryCreditCardTransactions( _
+    cn As ADODB.Connection, _
+    strDirectoryPath As String _
+)
+'''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+'DATE       AUTHOR
+'10/25/18   Alejandro
+'
+'PURPOSE
+'Saves the directory the user last used to select a file from when importing credit card
+'transactions to a user setting.
+'
+'PARAMETERS
+'   cn                  Connection to use
+'   strDirectoryPath    Directory to store
+'
+'TICKETS
+'Date       Ticket          Description
+'10/25/18   NHITAP-41       Create credit card purchase expensing tool
+'''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+    'Save the user setting
+    Dim strSQL As String
+    strSQL = _
+        "EXECUTE dbo.spSaveUserSetting " & _
+            "'LastImportDirectoryCreditCardTransactions', " & _
+            "'nvarchar(255)', " & _
+            FormatTextForQueries(strDirectoryPath, True)
+    ExecuteConnectionCommand cn, strSQL
+End Sub
