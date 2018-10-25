@@ -1,0 +1,32 @@
+Public Sub DeleteInvalidImportedRowsCreditCardTransactions( _
+    cn As ADODB.Connection, _
+    strImportTableName As String _
+)
+'''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+'DATE       AUTHOR
+'10/25/18   Alejandro
+'
+'PURPOSE
+'Deletes rows in the local table where imported credit card transactions are stored that are
+'considered invalid (such as the row that totals the transactions).
+'
+'PARAMETERS
+'   cn                  Connection to use
+'   strImportTableName  Name of the table where imported credit card transactions are stored
+'
+'TICKETS
+'Date       Ticket          Description
+'10/25/18   NHITAP-41       Create credit card purchase expensing tool
+'''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+    'Create database object
+    Dim db As DAO.Database
+    Set db = CurrentDb
+    
+    'Delete rows where TransactionID is null (there is a totals row for which this would be the case)
+    Dim strSQL As String
+    strSQL = _
+        "DELETE " & _
+        "FROM " & strImportTableName & " " & _
+        "WHERE [" & GetGlobalSetting(cn, "ImportFileCreditCardTransactionsColumnNameForTransactionID") & "] IS NULL"
+    ExecuteDatabaseCommand db, strSQL
+End Sub
