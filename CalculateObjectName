@@ -1,0 +1,32 @@
+Public Function CalculateObjectName( _
+    intObjectType As AcObjectType _
+) As String
+'''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+'DATE       AUTHOR
+'11/9/18   Alejandro
+'
+'PURPOSE
+'Returns a string description of the object type passed to the function. (eg. intObjectType =
+'AcObjectType.acQuery returns "Query")
+'
+'PARAMETERS
+'   intObjectType   Object type to return a string description of
+'
+'TICKETS
+'Date       Ticket          Description
+'11/9/18    NHITAP-41       Create credit card purchase expensing tool
+'''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+    'Return the name of the object
+    Select Case intObjectType
+        Case AcObjectType.acForm
+            CalculateObjectName = "Form"
+        Case AcObjectType.acQuery
+            CalculateObjectName = "Query"
+        Case AcObjectType.acReport
+            CalculateObjectName = "Report"
+        Case AcObjectType.acTable
+            CalculateObjectName = "Table"
+        Case Else
+            RaiseCustomError "Unsupported value for parameter intObjectType for function CalculateObjectName."
+    End Select
+End Function
