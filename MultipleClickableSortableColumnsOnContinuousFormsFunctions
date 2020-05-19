@@ -1,0 +1,438 @@
+'''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+' README
+'
+' DESCRIPTION
+' The following library of code can be placed in a module that is shared among all application
+' objects. It provides all functionality needed to make it so that a continuous form (a form that
+' displays multiple records at once without being in datasheet view), can have column headers that
+' when clicked on, will adjust the sort order of the records on the form.
+'
+' IMPLEMENTATION INSTRUCTIONS
+' 1) You must first have a continuous form with labels for column headers in the Form Header
+' 2) Column header labels must be named using the following convention:
+'      i)  lbl[ColumnNameFromRecordSource] (eg. lblCostCenterName)
+'      ii) It is important that [ColumnNameFromRecordSource] exactly match the column name of the
+'          data in the underlying recordsource as it will be used to build the SQL ORDER BY string
+' 2) You must create the following controls also in the Form Header near each of the column header
+'    labels:
+'      i)   Control type:             Label
+'           Control name:             lbl[ColumnNameFromRecordSource]SortDisplay
+'           Placement considerations: Looks best if place above label displaying column name (will
+'                                     display symbols such as up and down arrows and numbers to
+'                                     indicate the sort direction (ascending/descending) and order
+'           Visible:                  True
+'           Caption:                  empty string (blank)
+'      ii)  Control type:             Label
+'           Control name:             lbl[ColumnNameFromRecordSource]SortClickable
+'           Placement considerations: The entire label represents the clickable area which will
+'                                     adjust the column sorting for the given column. Functions
+'                                     best if placed around the text bounds of the column name
+'                                     extending up into the label that display the sort direction
+'                                     and order (allowing user to click anywhere near the column
+'                                     name or displayed sort direction/order, but not too far from
+'                                     the column name that it would be confusing to the user which
+'                                     column they had clicked)
+'           Visible:                  True
+'           Caption:                  "" (blank)
+'           Hyperlink Address:        "#"
+'           Hyperlink SubAddress:     "Click to adjust sorting"
+'           OnClick:                  "[Event Procedure]"
+'           OnClick VBA Code:         ChangeColumnSortState Me, CreateArrayColumnNames(), "[ColumnNameFromRecordsource]", blnShiftKeyPressed
+'      iii) Control type:             Text Box (unbound)
+'           Control name:             txt[ColumnNameFromRecordSource]SortOrder
+'           Placement considerations: None since it is not visible - anywhere near column name
+'                                     would be best so as not to be confusing for the developer.
+'           Visible:                  False
+'      iv)  Control type:             Text Box (unbound)
+'           Control name:             txt[ColumnNameFromRecordSource]SortIsAscending
+'           Placement considerations: None since it is not visible - anywhere near column name
+'                                     would be best so as not to be confusing for the developer.
+'           Visible:                  False
+' 3) You must declare a module-level variable in the code behind the form:
+'      i) Dim blnShiftKeyPressed As Boolean
+' 4) You must include a function that returns an array of all of the possible values for
+'    [ColumnNameFromRecordSource] (all of the column names of the data in the underlying
+'    recordsource for all of the displayed columns):
+'      i) Private Function CreateArrayColumnNames() As String()
+'             'Create a variable to store the result
+'             Dim arrResult(1 To n) As String
+'             
+'             'Populate the array with the column names
+'             arrResult(1) = "[ColumnNameFromRecordSource1]"
+'             arrResult(2) = "[ColumnNameFromRecordSource2]"
+'             ...
+'             arrResult(n) = "[ColumnNameFromRecordSourceN]"
+'             
+'             'Return result
+'             CreateArrayColumnNames = arrResult
+'         End Function
+' 5) You must have the following VBA code behind the form's Load event:
+'      i)  Me.KeyPreview = True
+'      ii) Code that sets a default sort order:
+'          'Set and display default sort order
+'          Me.txt[ColumnNameFromRecordSource11]SortOrder = 1          '(if sorting on more than one column, next column would have 2 here, next would have 3, etc.)
+'          Me.txt[ColumnNameFromRecordSource11]SortIsAscending = True '(if sorting descending, use False instead)
+'          Me.txt[ColumnNameFromRecordSource12]SortOrder = Null       '(if not sorting on a column, use Null here)
+'          Me.txt[ColumnNameFromRecordSource12]SortIsAscending = Null '(if not sorting on a column, use Null here)
+'          ...
+'          Me.txt[ColumnNameFromRecordSource1N]SortOrder = Null
+'          Me.txt[ColumnNameFromRecordSource1N]SortIsAscending = Null
+'          DisplayColumnSortStates Me, CreateArrayColumnNames()
+'          ApplyColumnSortStates Me, CreateArrayColumnNames()
+' 6) You must have the following VBA code behind the form's KeyDown event:
+'      i) blnShiftKeyPressed = (Shift And acShiftMask) > 0
+' 7) You must have the following VBA code behind the form's KeyUp event:
+'      i) blnShiftKeyPressed = Not ((Shift And acShiftMask) > 0)
+'''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+
+Public Sub ApplyColumnSortStates( _
+    frm As Form, _
+    arrColumnNames() As String _
+)
+    'Get a collection of column names and sort directions along with a sorted array that can be used to access the columns in their sort order
+    Dim arrSortOrders() As Integer
+    Dim colColumnNames As Collection
+    Dim colSortIsAscending As Collection
+    PopulateSortedArrayOfSortOrdersCollectionsOfColumnNamesSortIsAscending frm, arrColumnNames, arrSortOrders, colColumnNames, colSortIsAscending
+    
+    'Loop through each sorted item and build a SQL ORDER BY string (without the ORDER BY)
+    Dim i As Integer
+    Dim strOrderBy As String
+    Dim strKey As String
+    If IsArrayAllocated(arrSortOrders) Then
+        For i = LBound(arrSortOrders) To UBound(arrSortOrders)
+            strKey = CStr(arrSortOrders(i))
+            strOrderBy = strOrderBy & colColumnNames(strKey) & " " & IIf(colSortIsAscending(strKey), "ASC", "DESC") & ", "
+        Next i
+        strOrderBy = Left(strOrderBy, Len(strOrderBy) - Len(", "))
+    End If
+    
+    'Apply the sort to the form
+    frm.OrderBy = strOrderBy
+    frm.OrderByOn = strOrderBy <> ""
+End Sub
+
+Private Function CalculateSortControlNameLabel( _
+    strColumnName As String _
+) As String
+    'Return the name of the label control that displays the column name
+    CalculateSortControlNameLabel = "lbl" & strColumnName
+End Function
+
+Private Function CalculateSortControlNameSortDisplay( _
+    strColumnName As String _
+) As String
+    'Return the name of the label control that displays the sort order and direction
+    CalculateSortControlNameSortDisplay = "lbl" & strColumnName & "SortDisplay"
+End Function
+
+Private Function CalculateSortControlNameSortIsAscending( _
+    strColumnName As String _
+) As String
+    'Return the name of the text box control that stores the sort direction
+    CalculateSortControlNameSortIsAscending = "txt" & strColumnName & "SortIsAscending"
+End Function
+
+Private Function CalculateSortControlNameSortOrder( _
+    strColumnName As String _
+) As String
+    'Return the name of the text box control that stores the sort order
+    CalculateSortControlNameSortOrder = "txt" & strColumnName & "SortOrder"
+End Function
+
+Private Function CalculateIsAscendingForSortState( _
+    intSortState As nhSortState _
+) As Variant
+    'Determine the value that should go in the SortIsAscending textbox for the given sort state
+    Dim varResult As Variant
+    'Not sorted state - return Null
+    If intSortState = ssNotSorted Then
+        varResult = Null
+    'Ascending state - return True
+    ElseIf intSortState = ssSortedAscending Then
+        varResult = True
+    'Descending state - return False
+    ElseIf intSortState = ssSortedDescending Then
+        varResult = False
+    'Unknown - raise error
+    Else
+        RaiseCustomError "Error in function 'CalculateIsAscendingForSortState': unrecognized sort state parameter passed to function."
+    End If
+    
+    'Return the result
+    CalculateIsAscendingForSortState = varResult
+End Function
+
+Private Function CalculateNextSortState( _
+    intSortState As nhSortState _
+)
+    'Add 1 to the sort state enum, but wrap around back to 1 if it goes past the last sort state
+    CalculateNextSortState = IIf(intSortState + 1 > nhSortState.ssSortedDescending, 1, intSortState + 1)
+End Function
+
+Private Function CalculateSortOrderForSortState( _
+    frm As Form, _
+    arrColumnNames() As String, _
+    intSortState As nhSortState, _
+    blnShiftKeyPressedValue As Boolean, _
+    varCurrentSortOrder As Variant _
+) As Variant
+    'Determine the value that should go in the SortOrder textbox for the given sort state and current sort order
+    Dim varResult As Variant
+    'If moving to an unsorted state - return Null
+    If intSortState = ssNotSorted Then
+        varResult = Null
+    'Otherwise
+    Else
+        'If already sorted on - return current sort order
+        If Not IsNull(varCurrentSortOrder) Then
+            varResult = varCurrentSortOrder
+        'If SHIFT key pressed and not already sorted on - return max sort order + 1
+        ElseIf blnShiftKeyPressedValue And IsNull(varCurrentSortOrder) Then
+            varResult = GetMaxSortOrder(frm, arrColumnNames) + 1
+        'Otherwise - return 1
+        Else
+            varResult = 1
+        End If
+    End If
+    
+    'Return the result
+    CalculateSortOrderForSortState = varResult
+End Function
+
+Public Sub ChangeColumnSortState( _
+    frm As Form, _
+    arrColumnNames() As String, _
+    strColumnName As String, _
+    blnShiftKeyPressedValue As Boolean _
+)
+    'Loop through each column and set its sort state based on the column passed to the sub
+    Dim i As Integer
+    Dim intSortState As nhSortState
+    Dim txtSortOrder As TextBox
+    Dim txtSortIsAscending As TextBox
+    Dim intSortOrder As Integer
+    For i = LBound(arrColumnNames) To UBound(arrColumnNames)
+        'Get the sort property controls
+        Set txtSortOrder = frm.Controls(CalculateSortControlNameSortOrder(arrColumnNames(i)))
+        Set txtSortIsAscending = frm.Controls(CalculateSortControlNameSortIsAscending(arrColumnNames(i)))
+        'On the column passed to the sub
+        If arrColumnNames(i) = strColumnName Then
+            'Get current sort state and cycle to the next
+            intSortState = CalculateNextSortState(GetColumnSortState(txtSortIsAscending))
+        'Not the column passed to the sub
+        Else
+            'If SHIFT key is NOT pressed, reset the sort state
+            If Not blnShiftKeyPressedValue Then
+                intSortState = ssNotSorted
+            'Otherwise, do nothing
+            Else
+                intSortState = 0
+            End If
+        End If
+            
+        'Apply sort state (if one was set in the code above)
+        If intSortState <> 0 Then
+            txtSortIsAscending = CalculateIsAscendingForSortState(intSortState)
+            txtSortOrder = CalculateSortOrderForSortState(frm, arrColumnNames, intSortState, blnShiftKeyPressedValue, txtSortOrder.Value)
+        End If
+    Next i
+    
+    'Populate a sorted array of sort orders and a corresponding collection of sort order controls that can be looped through
+    Dim arrSortOrders() As Integer
+    Dim colSortOrderControls As Collection
+    PopulateSortedArrayOfSortOrdersCollectionOfSortOrderControls frm, arrColumnNames, arrSortOrders, colSortOrderControls
+    
+    'Update the sort orders to be sequential numbers starting from 1 for displaying
+    UpdateSortOrdersForDisplay arrSortOrders, colSortOrderControls
+    
+    'Display sort state
+    DisplayColumnSortStates frm, arrColumnNames
+    
+    'Apply sort
+    ApplyColumnSortStates frm, arrColumnNames
+End Sub
+
+Private Function CreateCollectionOfTextBoxesSortOrder( _
+    frm As Form, _
+    arrColumnNames() As String _
+) As Collection
+    'Create variable to store result
+    Dim colResult As Collection
+    Set colResult = New Collection
+    
+    'Loop through each column and add the sort order control to the result
+    Dim i As Integer
+    For i = LBound(arrColumnNames) To UBound(arrColumnNames)
+        colResult.Add frm.Controls(CalculateSortControlNameSortOrder(arrColumnNames(i)))
+    Next i
+    
+    'Return the result
+    Set CreateCollectionOfTextBoxesSortOrder = colResult
+End Function
+
+Public Sub DisplayColumnSortStates( _
+    frm As Form, _
+    arrColumnNames() As String _
+)
+    'Get the max sort order of all columns currently sorted
+    Dim intMaxSortOrder As Integer
+    intMaxSortOrder = GetMaxSortOrder(frm, arrColumnNames)
+    
+    'Loop through each column, get the controls that store its sort properties, and display its current sort state
+    Dim i As Integer
+    Dim lblLabel As Label
+    Dim txtSortOrder As TextBox
+    Dim txtSortIsAscending As TextBox
+    Dim lblSortDisplay As Label
+    For i = LBound(arrColumnNames) To UBound(arrColumnNames)
+        'Get the control that store its sort properties
+        Set lblLabel = frm.Controls(CalculateSortControlNameLabel(arrColumnNames(i)))
+        Set txtSortOrder = frm.Controls(CalculateSortControlNameSortOrder(arrColumnNames(i)))
+        Set txtSortIsAscending = frm.Controls(CalculateSortControlNameSortIsAscending(arrColumnNames(i)))
+        Set lblSortDisplay = frm.Controls(CalculateSortControlNameSortDisplay(arrColumnNames(i)))
+        'If sorted, display its sort state
+        If Not IsNull(txtSortOrder.Value) And Not IsNull(txtSortIsAscending) Then
+            'Bold column name
+            lblLabel.FontBold = True
+            'Display sort order character (eg. up arrow for ascending)
+            lblSortDisplay.Caption = _
+                IIf(intMaxSortOrder > 1, txtSortOrder & " ", "") & _
+                IIf(txtSortIsAscending, ChrW(intSortDisplayAscendingSymbol), ChrW(intSortDisplayDescendingSymbol))
+        'If not sorted, display that state
+        Else
+            'Un-bold column name
+            lblLabel.FontBold = False
+            'Don't display sort order character
+            lblSortDisplay.Caption = ""
+        End If
+    Next i
+End Sub
+
+Public Function GetColumnSortState( _
+    txtSortIsAscending As TextBox _
+) As nhSortState
+    'Get the current state by inspecting the sort order of the column
+    Dim intResult As Integer
+    'If null, then column is not sorted
+    If IsNull(txtSortIsAscending) Then
+        intResult = nhSortState.ssNotSorted
+    'Ascending sort state
+    ElseIf txtSortIsAscending = True Then
+        intResult = nhSortState.ssSortedAscending
+    'Descending sort state
+    ElseIf txtSortIsAscending = False Then
+        intResult = nhSortState.ssSortedDescending
+    'Unknown, raise error
+    Else
+        RaiseCustomError "Error in function 'GetCurrentSortState': The current sort state could not be determined."
+    End If
+    
+    'Return the sort state
+    GetColumnSortState = intResult
+End Function
+
+Public Function GetMaxSortOrder( _
+    frm As Form, _
+    arrColumnNames() As String _
+) As Integer
+    'Create a variable to store the result
+    Dim intResult As Integer
+    
+    'Get a column of the sort order text boxes
+    Dim colSortOrderTextBoxes As Collection
+    Set colSortOrderTextBoxes = CreateCollectionOfTextBoxesSortOrder(frm, arrColumnNames)
+    
+    'For each sort order text box, find the highest sort order
+    Dim txt As TextBox
+    For Each txt In colSortOrderTextBoxes
+        If txt.Value > intResult Then
+            intResult = txt.Value
+        End If
+    Next txt
+    
+    'Return the result
+    GetMaxSortOrder = intResult
+End Function
+
+Private Sub PopulateSortedArrayOfSortOrdersCollectionOfSortOrderControls( _
+    frm As Form, _
+    arrColumnNames() As String, _
+    ByRef arrSortOrders() As Integer, _
+    ByRef colSortOrderControls As Collection _
+)
+    'Initialize the collection
+    If colSortOrderControls Is Nothing Then
+        Set colSortOrderControls = New Collection
+    End If
+    
+    'Loop through each column and set its sort state based on the column passed to the sub
+    Dim i As Integer
+    Dim txtSortOrder As TextBox
+    For i = LBound(arrColumnNames) To UBound(arrColumnNames)
+        'Get the sort property control
+        Set txtSortOrder = frm.Controls(CalculateSortControlNameSortOrder(arrColumnNames(i)))
+        
+        'If the current column has a sort order, add it and its control to the array/collection
+        If Not IsNull(txtSortOrder) Then
+            InsertElementIntoArray arrSortOrders, txtSortOrder.Value
+            colSortOrderControls.Add txtSortOrder, CStr(txtSortOrder.Value)
+        End If
+    Next i
+    
+    'If there are sorted controls, sort their sort orders so we can cycle through the controls in their sort order
+    If IsArrayAllocated(arrSortOrders) Then
+        QSortInPlace arrSortOrders
+    End If
+End Sub
+
+Private Sub PopulateSortedArrayOfSortOrdersCollectionsOfColumnNamesSortIsAscending( _
+    frm As Form, _
+    arrColumnNames() As String, _
+    ByRef arrSortOrders() As Integer, _
+    ByRef colColumnNames As Collection, _
+    ByRef colSortIsAscending As Collection _
+)
+    'Initialize the collections
+    If colColumnNames Is Nothing Then
+        Set colColumnNames = New Collection
+    End If
+    If colSortIsAscending Is Nothing Then
+        Set colSortIsAscending = New Collection
+    End If
+    
+    'Loop through each column and set its sort state based on the column passed to the sub
+    Dim i As Integer
+    Dim txtSortOrder As TextBox
+    Dim txtSortIsAscending As TextBox
+    For i = LBound(arrColumnNames) To UBound(arrColumnNames)
+        'Get the sort property controls
+        Set txtSortOrder = frm.Controls(CalculateSortControlNameSortOrder(arrColumnNames(i)))
+        Set txtSortIsAscending = frm.Controls(CalculateSortControlNameSortIsAscending(arrColumnNames(i)))
+        
+        'If the current column has a sort order, add it and its column name and sort is ascending value to the array/collection
+        If Not IsNull(txtSortOrder) Then
+            InsertElementIntoArray arrSortOrders, txtSortOrder.Value
+            colColumnNames.Add arrColumnNames(i), CStr(txtSortOrder.Value)
+            colSortIsAscending.Add txtSortIsAscending.Value, CStr(txtSortOrder.Value)
+        End If
+    Next i
+    
+    'If there are sorted controls, sort their sort orders so we can cycle through the controls in their sort order
+    If IsArrayAllocated(arrSortOrders) Then
+        QSortInPlace arrSortOrders
+    End If
+End Sub
+
+Private Sub UpdateSortOrdersForDisplay( _
+    ByRef arrSortOrders() As Integer, _
+    ByRef colSortOrderControls As Collection _
+)
+    'Loop through each sorted item and update its sort order to be sequential numbers starting from 1 for displaying
+    Dim i As Integer
+    If IsArrayAllocated(arrSortOrders) Then
+        For i = LBound(arrSortOrders) To UBound(arrSortOrders)
+            colSortOrderControls(CStr(arrSortOrders(i))).Value = i + 1
+        Next i
+    End If
+End Sub
