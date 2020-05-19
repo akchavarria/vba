@@ -7,6 +7,22 @@
 ' displays multiple records at once without being in datasheet view), can have column headers that
 ' when clicked on, will adjust the sort order of the records on the form.
 '
+' "INSTALLATION" INSTRUCTIONS
+' 1) Create new global module (suggested name: MultipleClickableSortableColumnsOnContinuousFormsFunctions)
+' 2) Copy/paste the entirety of this file into the module and save
+' 3) You may already have a place where you declare global constants. If not, create a new module
+'    (suggested name: Constants). In your module, copy/paste the following code into it:
+'      i) 'Symbols to use to display sort order on columns in continuous forms with sortable columns
+'         Public Const intSortDisplayAscendingSymbol As Integer = 8593
+'         Public Const intSortDisplayDescendingSymbol As Integer = 8595
+' 4) You may already have a place where you declare global enumerations. If not, create a new
+'    module (suggested name: Enumerations). In your module, copy/paste the following code into it:
+'      i) Public Enum nhSortState
+'             ssNotSorted = 1
+'             ssSortedAscending = 2
+'             ssSortedDescending = 3
+'         End Enum
+'
 ' IMPLEMENTATION INSTRUCTIONS
 ' 1) You must first have a continuous form with labels for column headers in the Form Header
 ' 2) Column header labels must be named using the following convention:
