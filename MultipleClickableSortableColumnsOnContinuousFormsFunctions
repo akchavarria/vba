@@ -99,6 +99,8 @@
 '      i) blnShiftKeyPressed = (Shift And acShiftMask) > 0
 ' 7) You must have the following VBA code behind the form's KeyUp event:
 '      i) blnShiftKeyPressed = Not ((Shift And acShiftMask) > 0)
+' 8) You must have the following VBA code behind the OnClick event of each lbl[ColumnNameFromRecordSource]SortClickable label:
+'      i) ChangeColumnSortState Me, CreateArrayColumnNames(), "[ColumnNameFromRecordSource]", blnShiftKeyPressed
 '''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
 
 Public Sub ApplyColumnSortStates( _
