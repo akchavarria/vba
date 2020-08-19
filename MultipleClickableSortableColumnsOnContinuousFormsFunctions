@@ -10,18 +10,34 @@
 ' "INSTALLATION" INSTRUCTIONS
 ' 1) Create new global module (suggested name: MultipleClickableSortableColumnsOnContinuousFormsFunctions)
 ' 2) Copy/paste the entirety of this file into the module and save
-' 3) You may already have a place where you declare global constants. If not, create a new module
-'    (suggested name: Constants). In your module, copy/paste the following code into it:
-'      i) 'Symbols to use to display sort order on columns in continuous forms with sortable columns
-'         Public Const intSortDisplayAscendingSymbol As Integer = 8593
-'         Public Const intSortDisplayDescendingSymbol As Integer = 8595
-' 4) You may already have a place where you declare global enumerations. If not, create a new
-'    module (suggested name: Enumerations). In your module, copy/paste the following code into it:
-'      i) Public Enum nhSortState
-'             ssNotSorted = 1
-'             ssSortedAscending = 2
-'             ssSortedDescending = 3
-'         End Enum
+' 3) Uncomment the code below. You may already have a place where you declare global constants and
+'    you can choose to copy/paste this code there instead (make sure to change "Private" to
+'    "Public" below).
+'
+'        'Symbols to use to display sort order on columns in continuous forms with sortable columns
+'        Private Const intSortDisplayAscendingSymbol As Integer = 8593
+'        Private Const intSortDisplayDescendingSymbol As Integer = 8595
+'
+' 4) Uncomment the code below. You may already have a place where you declare enumerations and you
+'    can choose to copy/paste this code there instead (make sure to change "Private" to "Public"
+'    below).
+'
+'        Private Enum nhSortState
+'            ssNotSorted = 1
+'            ssSortedAscending = 2
+'            ssSortedDescending = 3
+'        End Enum
+'
+' 5) Uncomment the code below. You may already have a place where you declare "general functions"
+'    and you can choose to copy/paste this code there instead (make sure to change "Private" to
+'    "Public" below).
+'
+'        Private Sub RaiseCustomError(strErrorDescription As String)
+'            Err.Raise vbObjectError + 513, , strErrorDescription
+'        End Sub
+'
+' 6) Copy/paste the ArrayFunctions file in the vba directory of GitHub into its own module called
+'    ArrayFunctions.
 '
 ' IMPLEMENTATION INSTRUCTIONS
 ' 1) You must first have a continuous form with labels for column headers in the Form Header
@@ -49,7 +65,7 @@
 '                                     the column name that it would be confusing to the user which
 '                                     column they had clicked)
 '           Visible:                  True
-'           Caption:                  "" (blank)
+'           Caption:                  " " (space)
 '           Hyperlink Address:        "#"
 '           Hyperlink SubAddress:     "Click to adjust sorting"
 '           OnClick:                  "[Event Procedure]"
