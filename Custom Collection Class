@@ -20,39 +20,39 @@ Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
 Option Explicit
 
-Private objPeople As Collection
+Private colPeople As Collection
 
 Private Sub Class_Initialize()
-    Set objPeople = New Collection
+    Set colPeople = New Collection
 End Sub
 
 Private Sub Class_Terminate()
-    Set objPeople = Nothing
+    Set colPeople = Nothing
 End Sub
 
 Public Property Get NewEnum() As IUnknown
 Attribute NewEnum.VB_UserMemId = -4
 Attribute NewEnum.VB_MemberFlags = "40"
-    Set NewEnum = objPeople.[_NewEnum]
+    Set NewEnum = colPeople.[_NewEnum]
 End Property
 
 Public Sub Add(obj As Person)
-    objPeople.Add obj
+    colPeople.Add obj
 End Sub
 
 Public Sub Remove(Index As Variant)
-    objPeople.Remove Index
+    colPeople.Remove Index
 End Sub
 
 Public Property Get Item(Index As Variant) As Person
 Attribute Item.VB_UserMemId = 0
-    Set Item = objPeople.Item(Index)
+    Set Item = colPeople.Item(Index)
 End Property
 
 Property Get Count() As Long
-    Count = objPeople.Count
+    Count = colPeople.Count
 End Property
 
 Public Sub Clear()
-    Set objPeople = New Collection
+    Set colPeople = New Collection
 End Sub
