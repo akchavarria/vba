@@ -5,15 +5,15 @@
 'need a few Attribute modifiers to alter the behaviour of two important properties, and it’s not
 'possible to edit Attribute modifiers from VBA’s User Interface. If you didn’t attach the Attribute
 'modifiers, the Item property would not be the default property, and you would lose the ability to
-'For Each / Next on the Collection. So, using Notepad, save the following code as People.cls, then
-'from VBA > File > Import File, and import People.cls.
+'For Each / Next on the Collection. So, using Notepad, save the following code as clsPeople.cls, then
+'from VBA > File > Import File, and import clsPeople.cls.
 ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
 
 VERSION 1.0 CLASS
 BEGIN
   MultiUse = -1  'True
 End
-Attribute VB_Name = "People"
+Attribute VB_Name = "clsPeople"
 Attribute VB_GlobalNameSpace = False
 Attribute VB_Creatable = False
 Attribute VB_PredeclaredId = False
@@ -47,15 +47,49 @@ Attribute NewEnum.VB_MemberFlags = "40"
     Set NewEnum = colPeople.[_NewEnum]
 End Property
 
-Public Sub Add(obj As Person)
+Public Sub Add(obj As clsPerson)
+'**************************************************************************************************
+'DATE
+'
+'
+'PURPOSE
+'Adds a new clsPerson object to the collection
+'
+'PARAMETERS
+'   obj     clsPerson object to add to the collection
+'
+'RETURNS
+'   None
+'
+'TICKETS
+'Date       Ticket          Description
+'
+'**************************************************************************************************
     colPeople.Add obj
 End Sub
 
 Public Sub Remove(Index As Variant)
+'**************************************************************************************************
+'DATE
+'
+'
+'PURPOSE
+'Removes the given object at the given index from the collection
+'
+'PARAMETERS
+'   Index   Index of the object to remove from the collection
+'
+'RETURNS
+'   None
+'
+'TICKETS
+'Date       Ticket          Description
+'
+'**************************************************************************************************
     colPeople.Remove Index
 End Sub
 
-Public Property Get Item(Index As Variant) As Person
+Public Property Get Item(Index As Variant) As clsPerson
 Attribute Item.VB_UserMemId = 0
     Set Item = colPeople.Item(Index)
 End Property
@@ -65,5 +99,22 @@ Property Get Count() As Long
 End Property
 
 Public Sub Clear()
+'**************************************************************************************************
+'DATE
+'
+'
+'PURPOSE
+'Clears the entire collection with a new collection
+'
+'PARAMETERS
+'   None
+'
+'RETURNS
+'   None
+'
+'TICKETS
+'Date       Ticket          Description
+'
+'**************************************************************************************************
     Set colPeople = New Collection
 End Sub
